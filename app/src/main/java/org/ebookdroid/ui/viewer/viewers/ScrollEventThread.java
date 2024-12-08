@@ -1,23 +1,25 @@
 package org.ebookdroid.ui.viewer.viewers;
 
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.view.View;
+
 import org.ebookdroid.core.models.DocumentModel;
 import org.ebookdroid.ui.viewer.IActivityController;
 import org.ebookdroid.ui.viewer.IView;
 import org.ebookdroid.ui.viewer.IViewController;
-
-import android.graphics.Rect;
-import android.view.View;
+import org.emdev.utils.MathUtils;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import org.emdev.utils.MathUtils;
-import org.emdev.utils.concurrent.Flag;
+final class ScrollEventThread {
 
-final class ScrollEventThread extends Thread {
+    private static final int PAGE_POOL_SIZE = 6;
+    private static final int MSG_DECODE_START = 0;
+    private static final int MSG_DECODE_CANCEL = 2;
+    private static final int MSG_DECODE_FINISH = 4;
 
     private static boolean mergeEvents = false;
 
@@ -39,46 +41,46 @@ final class ScrollEventThread extends Thread {
 
     private final IActivityController base;
 
-    private final IView view;
+    private IView view = null;
+    private Handler mHandler;
+    private final Handler.Callback mCallback = msg -> {
+        int what = msg.what;
+        if (what == MSG_DECODE_START) {
+            run(msg.obj);
+        } else if (what == MSG_DECODE_CANCEL) {
+            if (null != view) {
+                view.stopScroller();
+            }
+            return true;
+        } else if (what == MSG_DECODE_FINISH) {
+            return true;
+        }
+        return true;
+    };
 
-    private final Flag stop = new Flag();
-
-    private final BlockingQueue<OnScrollEvent> queue = new LinkedBlockingQueue<>();
-
-    private final ConcurrentLinkedQueue<OnScrollEvent> pool = new ConcurrentLinkedQueue<>();
+    private void initScrollThread() {
+        HandlerThread handlerThread = new HandlerThread("taskThread");
+        handlerThread.start();
+        mHandler = new Handler(handlerThread.getLooper(), mCallback);
+    }
 
     ScrollEventThread(final IActivityController base, IView view) {
-        super("ScrollEventThread");
+        initScrollThread();
         this.base = base;
         this.view = view;
     }
 
-    @Override
-    public void run() {
-        while (!stop.get()) {
-            try {//这个时间影响滚动,时间太短,滚动会卡
-                final OnScrollEvent event = queue.poll(10, TimeUnit.SECONDS);
-                if (event == null) {
-                    continue;
-                }
-                if (mergeEvents) {
-                    for (OnScrollEvent event1 = queue.poll(); event1 != null; event1 = queue.poll()) {
-                        event.reuse(event1.m_curX, event1.m_curY, event.m_oldX, event.m_oldY);
-                        pool.add(event1);
-                    }
-                }
-                process(event);
-            } catch (final InterruptedException e) {
-                Thread.interrupted();
-            } catch (final Throwable th) {
-                th.printStackTrace();
-            }
-        }
-        // System.out.println("ScrollEventThread.run(): finished");
+    public void run(Object obj) {
+        final OnScrollEvent event = (OnScrollEvent) obj;
+
+        process(event);
     }
 
     void finish() {
-        stop.set();
+        if (null != mHandler) {
+            mHandler.sendEmptyMessage(MSG_DECODE_FINISH);
+            mHandler.getLooper().quit();
+        }
     }
 
     void scrollTo(final int x, final int y) {
@@ -121,29 +123,25 @@ final class ScrollEventThread extends Thread {
     }
 
     void onScrollChanged(final int curX, final int curY, final int oldX, final int oldY) {
-        OnScrollEvent event = pool.poll();
-        if (event != null) {
-            event.reuse(curX, curY, oldX, oldY);
-        } else {
-            event = new OnScrollEvent(curX, curY, oldX, oldY);
-        }
-        queue.offer(event);
+        OnScrollEvent event = new OnScrollEvent(curX, curY, oldX, oldY);
+        Message message = Message.obtain();
+        message.obj = event;
+        message.what = MSG_DECODE_START;
+        mHandler.sendMessage(message);
     }
 
     private void process(final OnScrollEvent event) {
-        // final long t1 = System.currentTimeMillis();
+        //final long t1 = System.currentTimeMillis();
         try {
             final int dX = event.m_curX - event.m_oldX;
             final int dY = event.m_curY - event.m_oldY;
 
             base.getDocumentController().onScrollChanged(dX, dY);
-
         } catch (final Throwable th) {
             th.printStackTrace();
         } finally {
-            pool.add(event);
-            // final long t2 = System.currentTimeMillis();
-            // System.out.println("ScrollEventThread.onScrollChanged(): " + (t2 - t1) + " ms, " + pool.size());
+            //final long t2 = System.currentTimeMillis();
+            //System.out.println("ScrollEventThread.onScrollChanged(): " + (t2 - t1) + " ms, "+event);
         }
     }
 
@@ -165,5 +163,14 @@ final class ScrollEventThread extends Thread {
             m_oldY = oldY;
         }
 
+        @Override
+        public String toString() {
+            return "OnScrollEvent{" +
+                    "m_oldX=" + m_oldX +
+                    ", m_curY=" + m_curY +
+                    ", m_curX=" + m_curX +
+                    ", m_oldY=" + m_oldY +
+                    '}';
+        }
     }
 }

@@ -58,7 +58,6 @@ public final class GLView extends GLRootView implements IView, SurfaceHolder.Cal
 
         drawQueue = new DrawQueue();
         scrollThread = new ScrollEventThread(base, this);
-        scrollThread.start();
     }
 
     protected void draw(GLCanvas canvas) {
