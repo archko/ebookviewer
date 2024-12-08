@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <dimen name="actionbar_height">48dip</dimen>
+    <dimen name="actionbar_separator_height">44dip</dimen>
+    <dimen name="actionbar_separator_width">4dip</dimen>
+
+    <dimen name="recent_bookcase_title_margin">1dip</dimen>
+
+    <dimen name="browser_item_title_textsize">17dp</dimen>
+    <dimen name="browser_item_info_textsize">13dp</dimen>
+
+    <dimen name="book_height">48dip</dimen>
+    <dimen name="book_item_height">52dip</dimen>
+
+</resources>

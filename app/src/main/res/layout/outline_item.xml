@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="@drawable/viewer_outline_item_background"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/outline_space"
+        android:layout_width="0dp"
+        android:layout_height="48dp" />
+
+    <ImageView
+        android:id="@+id/outline_collapse"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toEndOf="@id/outline_space"
+        android:scaleType="center"
+        android:src="@drawable/viewer_outline_item_expanded" />
+
+    <TextView
+        android:id="@+id/outline_pageindex"
+        android:layout_width="?android:attr/listPreferredItemHeight"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        tools:text="101" />
+
+    <TextView
+        android:id="@+id/outline_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toStartOf="@id/outline_pageindex"
+        android:layout_toEndOf="@id/outline_collapse"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        tools:text="Outline item text" />
+
+</RelativeLayout>

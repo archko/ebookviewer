@@ -1,0 +1,106 @@
+apply plugin: 'com.android.application'
+
+android {
+    if (project.android.hasProperty("namespace")) {
+        namespace 'org.ebookdroid'
+    }
+    useLibrary 'org.apache.http.legacy'
+    compileSdkVersion 35
+
+    defaultConfig {
+        applicationId "org.ebookviewer"
+        minSdkVersion 21
+        targetSdkVersion 34
+        versionCode 3010
+        versionName "3.0.1"
+        multiDexEnabled false
+        ndk {
+            abiFilters 'arm64-v8a' //,'armeabi-v7a',  'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_static"
+            }
+        }
+    }
+
+    sourceSets.main {
+        jniLibs.srcDir 'jniLibs'
+    }
+
+    /*externalNativeBuild {
+        cmake {
+            path "cmake/CMakeLists.txt"
+        }
+        //dkBuild.path 'jni/Android.mk'
+    }*/
+
+    android.ndkVersion '25.2.9519653'
+
+    signingConfigs {
+        key {
+            storeFile file('release_key.jks')
+            storePassword ''
+            keyAlias ''
+            keyPassword ''
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        debug {
+            zipAlignEnabled true
+            shrinkResources false
+            minifyEnabled false
+            signingConfig signingConfigs.key
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            zipAlignEnabled true
+            shrinkResources false
+            minifyEnabled false
+            signingConfig signingConfigs.key
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        checkAllWarnings false
+        warningsAsErrors false
+        abortOnError false
+        disable 'AndroidGradlePluginVersion', 'InvalidPackage', 'GradleDependency'
+        lintConfig file('src/main/lint.xml')
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude 'assets/lineDashTexture.png'
+    }
+
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
+            outputFileName = "Dragon Pdf-${variant.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+    api fileTree(dir: "libs", include: ["*.jar"])
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation "com.google.android.material:material:1.12.0"
+    api "com.artifex.mupdf:mupdf-fitz:1.25.0"
+}
