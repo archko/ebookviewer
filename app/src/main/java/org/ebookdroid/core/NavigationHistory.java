@@ -23,11 +23,11 @@ public class NavigationHistory {
     }
 
     public boolean goBack() {
-        final Position position = history.isEmpty() ? null : history.removeFirst();
+        /*final Position position = history.isEmpty() ? null : history.removeFirst();
         if (position != null) {
             base.getDocumentController().goToPage(position.index.viewIndex, position.offsetX, position.offsetY);
             return true;
-        }
+        }*/
         return false;
     }
 
