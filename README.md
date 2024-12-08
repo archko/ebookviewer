@@ -9,12 +9,13 @@ Supports the following formats:
 * XPS (OpenXPS)
 * CBZ (Comic Books, no support for rar compressed CBR)
 * FictionBook (fb2)
+* DOXC, PPTX, XLSX
 
 Collaboration with electronic publication sites and access to online ebook catalogs is allowed by the supported OPDS protocol.
 
 FAQ, information about supported MIME types, and available Intents can be found in the [Wiki](https://github.com/dschuermann/document-viewer/wiki).
 
-## [Changelog](https://raw.githubusercontent.com/SufficientlySecure/document-viewer/HEAD/document-viewer/src/main/assets/about/en/changelog.wiki)
+## [Changelog](app/src/main/assets/about/en/changelog.wiki)
 
 ## Development
 
