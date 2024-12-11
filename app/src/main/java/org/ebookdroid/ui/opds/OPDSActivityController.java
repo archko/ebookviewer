@@ -32,7 +32,6 @@ import org.emdev.ui.actions.params.EditableValue;
 import org.emdev.ui.actions.params.EditableValue.PasswordEditable;
 import org.emdev.utils.LengthUtils;
 
-@TargetApi(8)
 public class OPDSActivityController extends AbstractActivityController<OPDSActivity> implements
     ExpandableListView.OnGroupClickListener, ExpandableListView.OnChildClickListener, FeedListener {
 

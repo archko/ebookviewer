@@ -80,28 +80,25 @@ public class TextViewMultilineEllipse extends View {
         super(context, attrs);
         init();
 
-        try (TypedArray a = context.obtainStyledAttributes(attrs,
-            R.styleable.TextViewMultilineEllipse)) {
-
-            CharSequence s = a.getString(R.styleable.TextViewMultilineEllipse_text);
-            if (s != null) {
-                setText(s.toString());
-            }
-
-            // Retrieve the color(s) to be used for this view and apply them.
-            // Note, if you only care about supporting a single color, that you
-            // can instead call a.getColor() and pass that to setTextColor().
-            setTextColor(a.getColorStateList(R.styleable.TextViewMultilineEllipse_textColor));
-
-            int textSize = a.getDimensionPixelOffset(R.styleable.TextViewMultilineEllipse_textSize, 0);
-            if (textSize > 0) {
-                setTextSize(textSize);
-            }
-
-            mMaxLines = a.getInt(R.styleable.TextViewMultilineEllipse_maxLines, -1);
-
-            a.recycle();
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TextViewMultilineEllipse);
+        CharSequence s = a.getString(R.styleable.TextViewMultilineEllipse_text);
+        if (s != null) {
+            setText(s.toString());
         }
+
+        // Retrieve the color(s) to be used for this view and apply them.
+        // Note, if you only care about supporting a single color, that you
+        // can instead call a.getColor() and pass that to setTextColor().
+        setTextColor(a.getColorStateList(R.styleable.TextViewMultilineEllipse_textColor));
+
+        int textSize = a.getDimensionPixelOffset(R.styleable.TextViewMultilineEllipse_textSize, 0);
+        if (textSize > 0) {
+            setTextSize(textSize);
+        }
+
+        mMaxLines = a.getInt(R.styleable.TextViewMultilineEllipse_maxLines, -1);
+
+        a.recycle();
     }
 
     private void init() {
@@ -378,11 +375,11 @@ public class TextViewMultilineEllipse extends View {
                         if (mRightAlignEllipsizeMoreString) {
                             // Seems to not be right...
                             canvas.drawText(mStrEllipsisMore, getWidth()
-                                    - (breaker.getLengthEllipsisMore() + getPaddingRight() + getPaddingLeft()), y,
-                                mTextPaint);
+                                            - (breaker.getLengthEllipsisMore() + getPaddingRight() + getPaddingLeft()), y,
+                                    mTextPaint);
                         } else {
                             canvas.drawText(mStrEllipsisMore, x + breaker.getLengthLastEllipsizedLinePlusEllipsis(), y,
-                                mTextPaint);
+                                    mTextPaint);
                         }
                         mTextPaint.setColor(lastColor);
                     }
@@ -416,10 +413,10 @@ public class TextViewMultilineEllipse extends View {
         int widthUsed = 0;
         if (mExpanded) {
             widthUsed = mBreakerExpanded.breakText(mText, availableWidth - getPaddingLeft() - getPaddingRight(),
-                mTextPaint);
+                    mTextPaint);
         } else {
             widthUsed = mBreakerCollapsed.breakText(mText, mStrEllipsis, mStrEllipsisMore, mMaxLines, availableWidth
-                - getPaddingLeft() - getPaddingRight(), mTextPaint);
+                    - getPaddingLeft() - getPaddingRight(), mTextPaint);
         }
 
         return widthUsed + getPaddingLeft() + getPaddingRight();

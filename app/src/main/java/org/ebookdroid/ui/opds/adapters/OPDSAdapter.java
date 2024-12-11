@@ -46,7 +46,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@TargetApi(8)
 public class OPDSAdapter extends BaseExpandableListAdapter {
 
     final Context context;
